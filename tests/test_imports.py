@@ -123,6 +123,18 @@ class TestImports:
 
 
 class TestIncludes:
+    def test_without_context_include_in_macro(self):
+        env = Environment(
+            loader=DictLoader(
+                {
+                    "main": "{% macro foo() %}{% include 'included' without context %}{% endmacro %}{{ foo() }}",
+                    "included": "foo",
+                }
+            )
+        )
+
+        assert env.get_template("main").render() == "foo"
+
     def test_context_include(self, test_env):
         t = test_env.from_string('{% include "header" %}')
         assert t.render(foo=42) == "[42|23]"
